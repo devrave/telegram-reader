@@ -23,8 +23,8 @@ export class ChannelService {
     const root = HTMLParser.parse(html);
 
     return {
-      title: this.getTitle(root),
-      username: this.getUsername(root),
+      title: this.getTitle(root) ?? "",
+      username: this.getUsername(root) ?? "",
       photoURL: this.getPhotoURL(root),
       descriptionHTML: this.getDescriptionHTML(root),
       counters: this.getCounters(root)
@@ -73,15 +73,12 @@ export class ChannelService {
     };
   }
 
-  private extractCounterValue(
-    counters: HTMLParser.HTMLElement[],
-    name: string
-  ): string {
-    for (const counter of counters) {
-      const type = counter.querySelector(".counter_type").text;
+  private extractCounterValue(counterElements: HTMLParser.HTMLElement[], name: string) {
+    for (const counter of counterElements) {
+      const type = counter.querySelector(".counter_type")?.text;
 
       if (type === name) {
-        return counter.querySelector(".counter_value").text;
+        return counter.querySelector(".counter_value")?.text ?? null;
       }
     }
 

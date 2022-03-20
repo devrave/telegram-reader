@@ -25,15 +25,15 @@ export type PostFile = {
 
 export type Post = {
   id: number;
-  author: PostAuthor;
+  author: PostAuthor | null;
   contentHTML: string | null;
   poll: PostPoll | null;
   videoURLs: string[];
   photoURLs: string[];
   files: PostFile[];
   stickerURLs: string[];
-  views: string;
-  date: Date;
+  views: string | null;
+  date: Date | null;
   isAdvertisement: boolean;
 };
 
@@ -51,23 +51,38 @@ export class PostService {
         continue;
       }
 
-      const contentElement = postElement.querySelector(
-        ".tgme_widget_message_text"
-      );
-      const contentService = new PostContentService(contentElement);
-      const contentHTML = contentService.getHTML();
-
-      posts.push({
+      const post: Omit<Post, "contentHTML" | "isAdvertisement"> = {
         id: this.getPostID(postElement),
         author: this.getAuthor(postElement),
-        contentHTML,
         videoURLs: this.getVideoURLs(postElement),
         photoURLs: this.getPhotoURLs(postElement),
         files: this.getFiles(postElement),
         stickerURLs: this.getStickerURLs(postElement),
         poll: this.getPoll(postElement),
         views: this.getViews(postElement),
-        date: this.getDate(postElement),
+        date: this.getDate(postElement)
+      }
+
+      const contentElement = postElement.querySelector(
+        ".tgme_widget_message_text"
+      );
+
+      if (!contentElement) {
+        posts.push({
+          ...post,
+          contentHTML: "",
+          isAdvertisement: false
+        });
+
+        continue;
+      }
+
+      const contentService = new PostContentService(contentElement);
+      const contentHTML = contentService.getHTML();
+
+      posts.push({
+        ...post,
+        contentHTML,
         isAdvertisement: this.isAdvertisement(contentHTML)
       });
     }
@@ -75,13 +90,17 @@ export class PostService {
     return posts;
   }
 
-  private getAuthor(postElement: HTMLParser.HTMLElement): PostAuthor {
+  private getAuthor(postElement: HTMLParser.HTMLElement): PostAuthor | null {
     const authorNameElement = postElement.querySelector(
       ".tgme_widget_message_owner_name"
     );
     const authorPhotoElement = postElement.querySelector(
       ".tgme_widget_message_user_photo > img"
     );
+
+    if (!authorNameElement || !authorPhotoElement) {
+      return null;
+    }
 
     return {
       name: authorNameElement.text,
@@ -93,6 +112,10 @@ export class PostService {
     const viewsElement = postElement.querySelector(
       ".tgme_widget_message_views"
     );
+
+    if (!viewsElement) {
+      return null;
+    }
 
     return viewsElement.text;
   }
@@ -149,6 +172,10 @@ export class PostService {
         ".tgme_widget_message_document_extra"
       );
 
+      if (!titleElement || !extraElement) {
+        continue;
+      }
+
       files.push({
         title: titleElement.text,
         extra: extraElement.text
@@ -172,7 +199,7 @@ export class PostService {
     return [ ...new Set(sources) ];
   }
 
-  private getPoll(postElement: HTMLParser.HTMLElement): PostPoll {
+  private getPoll(postElement: HTMLParser.HTMLElement): PostPoll | null {
     const pollElement = postElement.querySelector(".tgme_widget_message_poll");
 
     if (!pollElement) {
@@ -183,26 +210,39 @@ export class PostService {
       ".tgme_widget_message_poll_question"
     );
     const typeElement = pollElement.querySelector(".tgme_widget_message_poll_type");
+
+    if (!questionElement || !typeElement) {
+      return null;
+    }
+
     const optionElements = pollElement.querySelectorAll(
       ".tgme_widget_message_poll_option"
     );
 
+    const options: PollOption[] = [];
+
+    for (const element of optionElements) {
+      const percentElement = element.querySelector(
+        ".tgme_widget_message_poll_option_percent"
+      );
+      const valueElement = element.querySelector(
+        ".tgme_widget_message_poll_option_text"
+      );
+
+      if (!percentElement || !valueElement) {
+        continue;
+      }
+
+      options.push({
+        value: valueElement.text,
+        percent: percentElement.text
+      });
+    }
+
     return {
       question: questionElement.text,
       type: typeElement.text,
-      options: optionElements.map((option) => {
-        const percentElement = option.querySelector(
-          ".tgme_widget_message_poll_option_percent"
-        );
-        const valueElement = option.querySelector(
-          ".tgme_widget_message_poll_option_text"
-        );
-
-        return {
-          value: valueElement.text,
-          percent: percentElement.text
-        };
-      })
+      options
     };
   }
 
@@ -218,6 +258,10 @@ export class PostService {
     const dateElement = postElement.querySelector(
       ".tgme_widget_message_date > time"
     );
+
+    if (!dateElement) {
+      return null;
+    }
 
     return new Date(dateElement.attrs["datetime"]);
   }
