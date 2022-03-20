@@ -12,6 +12,7 @@ export type ChannelCounters = {
 export type ChannelInfo = {
   title: string;
   username: string;
+  photoURL?: string;
   descriptionHTML?: string;
   counters: ChannelCounters;
 };
@@ -24,6 +25,7 @@ export class ChannelService {
     return {
       title: this.getTitle(root),
       username: this.getUsername(root),
+      photoURL: this.getPhotoURL(root),
       descriptionHTML: this.getDescriptionHTML(root),
       counters: this.getCounters(root)
     };
@@ -49,6 +51,14 @@ export class ChannelService {
     );
 
     return descriptionElement?.innerHTML;
+  }
+
+  private getPhotoURL(root: HTMLParser.HTMLElement) {
+    const photoElement = root.querySelector(
+      ".tgme_page_photo_image > img"
+    );
+
+    return photoElement?.attrs["src"];
   }
 
   private getCounters(root: HTMLParser.HTMLElement) {
