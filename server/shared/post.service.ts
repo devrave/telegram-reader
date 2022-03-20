@@ -39,7 +39,7 @@ export type Post = {
 
 @Injectable()
 export class PostService {
-  public async parse(html: string): Promise<Post[]> {
+  public parse(html: string) {
     const root = HTMLParser.parse(html);
     const posts: Post[] = [];
 
@@ -89,7 +89,7 @@ export class PostService {
     };
   }
 
-  private getViews(postElement: HTMLParser.HTMLElement): string {
+  private getViews(postElement: HTMLParser.HTMLElement) {
     const viewsElement = postElement.querySelector(
       ".tgme_widget_message_views"
     );
@@ -97,7 +97,7 @@ export class PostService {
     return viewsElement.text;
   }
 
-  private getVideoURLs(postElement: HTMLParser.HTMLElement): string[] {
+  private getVideoURLs(postElement: HTMLParser.HTMLElement) {
     const videoElements = postElement.querySelectorAll(
       ".tgme_widget_message_video_player video"
     );
@@ -111,7 +111,7 @@ export class PostService {
     return [ ...new Set(sources) ];
   }
 
-  private getPhotoURLs(postElement: HTMLParser.HTMLElement): string[] {
+  private getPhotoURLs(postElement: HTMLParser.HTMLElement) {
     const photoElements = postElement.querySelectorAll(
       ".tgme_widget_message_photo_wrap"
     );
@@ -134,7 +134,7 @@ export class PostService {
     return [ ...new Set(sources) ];
   }
 
-  private getFiles(postElement: HTMLParser.HTMLElement): PostFile[] {
+  private getFiles(postElement: HTMLParser.HTMLElement) {
     const filesElements = postElement.querySelectorAll(
       ".tgme_widget_message_document"
     );
@@ -158,7 +158,7 @@ export class PostService {
     return files;
   }
 
-  private getStickerURLs(postElement: HTMLParser.HTMLElement): string[] {
+  private getStickerURLs(postElement: HTMLParser.HTMLElement) {
     const stickerElements = postElement.querySelectorAll(
       ".tgme_widget_message_sticker"
     );

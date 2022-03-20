@@ -12,7 +12,7 @@ export type ChannelCounters = {
 export type ChannelInfo = {
   title: string;
   username: string;
-  description?: string;
+  descriptionHTML?: string;
   counters: ChannelCounters;
 };
 
@@ -21,34 +21,45 @@ export class ChannelService {
   public async parse(html: string): Promise<ChannelInfo | null> {
     const root = HTMLParser.parse(html);
 
+    return {
+      title: this.getTitle(root),
+      username: this.getUsername(root),
+      descriptionHTML: this.getDescriptionHTML(root),
+      counters: this.getCounters(root)
+    };
+  }
+
+  private getTitle(root: HTMLParser.HTMLElement) {
     const titleElement = root.querySelector(".tgme_channel_info_header_title");
+
+    return titleElement?.text;
+  }
+
+  private getUsername(root: HTMLParser.HTMLElement) {
     const usernameElement = root.querySelector(
       ".tgme_channel_info_header_username"
     );
+
+    return usernameElement?.text;
+  }
+
+  private getDescriptionHTML(root: HTMLParser.HTMLElement) {
     const descriptionElement = root.querySelector(
       ".tgme_channel_info_description"
     );
+
+    return descriptionElement?.innerHTML;
+  }
+
+  private getCounters(root: HTMLParser.HTMLElement) {
     const counterElements = root.querySelectorAll(".tgme_channel_info_counter");
 
-    if (!titleElement) {
-      return null;
-    }
-
-    const title = titleElement.text;
-    const username = usernameElement.text;
-    const description = descriptionElement?.innerHTML;
-
     return {
-      title,
-      username,
-      description,
-      counters: {
-        subscribers: this.extractCounterValue(counterElements, "subscribers"),
-        photos: this.extractCounterValue(counterElements, "photos"),
-        videos: this.extractCounterValue(counterElements, "videos"),
-        files: this.extractCounterValue(counterElements, "files"),
-        links: this.extractCounterValue(counterElements, "links")
-      }
+      subscribers: this.extractCounterValue(counterElements, "subscribers"),
+      photos: this.extractCounterValue(counterElements, "photos"),
+      videos: this.extractCounterValue(counterElements, "videos"),
+      files: this.extractCounterValue(counterElements, "files"),
+      links: this.extractCounterValue(counterElements, "links")
     };
   }
 
