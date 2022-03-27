@@ -13,10 +13,12 @@ export class UserService {
     private userRepository: Repository<User>
   ) {}
 
-  public async create() {
+  public async create(name: string) {
     const user = new User();
 
+    user.name = name;
     user.privateKey = await this.generatePrivateKey();
+    user.groups = [];
 
     return this.userRepository.save(user);
   }

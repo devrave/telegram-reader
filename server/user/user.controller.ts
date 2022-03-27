@@ -1,4 +1,4 @@
-import { Controller, Post } from "@nestjs/common";
+import { Controller, Post, Query } from "@nestjs/common";
 import { UserService } from "./user.service";
 
 @Controller()
@@ -8,7 +8,7 @@ export class UserController {
   ) {}
 
   @Post("/users")
-  async create() {
-    await this.userService.create();
+  async create(@Query("name") name: string) {
+    await this.userService.create(name);
   }
 }
