@@ -13,7 +13,7 @@ export class UserService {
     private userRepository: Repository<User>
   ) {}
 
-  public async create(name: string) {
+  public async register(name: string) {
     const user = new User();
 
     user.name = name;
