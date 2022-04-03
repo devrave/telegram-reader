@@ -2,15 +2,17 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ChannelModule } from "./channel/channel.module";
 import { Group } from "./group/group.entity";
+import { GroupModule } from "./group/group.module";
 import { PostModule } from "./post/post.module";
 import { User } from "./user/user.entity";
-import { UsersModule } from "./user/user.module";
+import { UserModule } from "./user/user.module";
 
 @Module({
   imports: [
     ChannelModule,
     PostModule,
-    UsersModule,
+    UserModule,
+    GroupModule,
     TypeOrmModule.forRoot({
       type: "postgres",
       host: "postgres",

@@ -14,4 +14,7 @@ export class Group {
 
   @ManyToOne(() => User, (user) => user.groups)
   public user!: User;
+
+  @Column({ name: "userId" })
+  public userID!: number;
 }

@@ -10,12 +10,21 @@ export class GroupService {
     private groupRepository: Repository<Group>
   ) {}
 
-  public async create(name: string) {
+  public async create(name: string, userID: number) {
     const group = new Group();
 
     group.name = name;
     group.channels = [];
+    group.userID = userID;
 
     return this.groupRepository.save(group);
+  }
+
+  public async getUserGroups(userID: number) {
+    return this.groupRepository.find({
+      where: {
+        userID
+      }
+    });
   }
 }

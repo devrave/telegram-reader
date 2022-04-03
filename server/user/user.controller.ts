@@ -24,6 +24,7 @@ export class UserController {
       throw new BadRequestException("Already registered");
     }
 
+    // TODO: use class-validator
     if (!name) {
       throw new BadRequestException("Name is required");
     }
