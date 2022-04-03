@@ -9,7 +9,7 @@ export class Group {
   @Column()
   public name!: string;
 
-  @Column()
+  @Column("text", { array: true })
   public channels!: string[];
 
   @ManyToOne(() => User, (user) => user.groups)
