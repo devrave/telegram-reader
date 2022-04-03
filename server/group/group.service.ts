@@ -3,7 +3,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Group } from "./group.entity";
 
-
 @Injectable()
 export class GroupService {
   public constructor(
@@ -17,6 +16,6 @@ export class GroupService {
     group.name = name;
     group.channels = [];
 
-    await this.groupRepository.save(group);
+    return this.groupRepository.save(group);
   }
 }
