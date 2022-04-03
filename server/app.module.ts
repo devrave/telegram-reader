@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ChannelModule } from "./channel/channel.module";
+import { Group } from "./group/group.entity";
 import { PostModule } from "./post/post.module";
 import { User } from "./user/user.entity";
 import { UsersModule } from "./user/user.module";
@@ -18,7 +19,8 @@ import { UsersModule } from "./user/user.module";
       password: "test",
       database: "test",
       entities: [
-        User
+        User,
+        Group
       ],
       synchronize: true
     })
