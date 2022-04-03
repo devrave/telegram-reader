@@ -4,13 +4,13 @@ import { PostService } from "../shared/post.service";
 
 @Controller()
 export class PostController {
-  constructor(
+  public constructor(
     private readonly postService: PostService,
     private readonly fetchService: TelegramFetchService
   ) {}
 
   @Get("/channels/:name/posts")
-  async getInfo(@Param("name") name: string, @Query("before") before: number) {
+  public async getInfo(@Param("name") name: string, @Query("before") before: number) {
     const html = await this.fetchService.fetchChannelPage(name, before);
 
     return this.postService.parse(html);

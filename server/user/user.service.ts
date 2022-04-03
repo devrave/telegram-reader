@@ -23,6 +23,14 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
+  public async getUserByPrivateKey(privateKey: string) {
+    return this.userRepository.findOne({
+      where: {
+        privateKey
+      }
+    });
+  }
+
   private async generatePrivateKey() {
     return nanoid(USER_PRIVATE_KEY_LENGTH);
   }
