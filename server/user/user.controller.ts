@@ -1,6 +1,11 @@
-import { Controller, Post, Body, Session, Req, BadRequestException, NotFoundException } from "@nestjs/common";
+import {
+  Controller, Post, Body,
+  Session, Req,
+  UseGuards,
+  BadRequestException, NotFoundException } from "@nestjs/common";
 import { Request } from "express";
 import { promisify } from "util";
+import { AuthGuard } from "server/shared/auth.guard";
 import { SessionParams } from "server/shared/session.types";
 import { UserService } from "./user.service";
 
@@ -56,6 +61,7 @@ export class UserController {
   }
 
   @Post("/users/logout")
+  @UseGuards(AuthGuard)
   public async logout(@Req() request: Request) {
     const destroySession = promisify(request.session.destroy).bind(request.session);
  
