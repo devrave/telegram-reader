@@ -2,19 +2,23 @@ import {
   Controller, Post, Body,
   Session, Req,
   UseGuards,
-  BadRequestException, NotFoundException } from "@nestjs/common";
+  BadRequestException, NotFoundException
+} from "@nestjs/common";
 import { Request } from "express";
+import { MaxLength } from "class-validator";
 import { promisify } from "util";
 import { AuthGuard } from "server/shared/auth.guard";
 import { SessionParams } from "server/shared/session.types";
-import { UserService } from "./user.service";
+import { UserService, USER_PRIVATE_KEY_LENGTH } from "./user.service";
 
-export type RegisterUserParams = {
-  name?: string;
+export class CreateUserParams {
+  @MaxLength(64)
+  public name!: string;
 }
 
-export type LoginParams = {
-  privateKey?: string;
+export class LoginParams {
+  @MaxLength(USER_PRIVATE_KEY_LENGTH)
+  public privateKey!: string;
 }
 
 @Controller()
@@ -24,14 +28,9 @@ export class UserController {
   ) {}
 
   @Post("/users/register")
-  public async register(@Body() { name }: RegisterUserParams, @Session() session: SessionParams) {
+  public async register(@Body() { name }: CreateUserParams, @Session() session: SessionParams) {
     if (session.userID) {
       throw new BadRequestException("Already registered");
-    }
-
-    // TODO: use class-validator
-    if (!name) {
-      throw new BadRequestException("Name is required");
     }
 
     const user = await this.userService.register(name);
@@ -44,10 +43,6 @@ export class UserController {
   public async login(@Body() { privateKey }: LoginParams, @Session() session: SessionParams) {
     if (session.userID) {
       throw new BadRequestException("Already logged in");
-    }
-
-    if (!privateKey) {
-      throw new BadRequestException("Private key is required");
     }
 
     const user = await this.userService.getUserByPrivateKey(privateKey);

@@ -4,7 +4,7 @@ import { Repository } from "typeorm";
 import { nanoid } from "nanoid/async";
 import { User } from "./user.entity";
 
-const USER_PRIVATE_KEY_LENGTH = 256;
+export const USER_PRIVATE_KEY_LENGTH = 256;
 
 @Injectable()
 export class UserService {

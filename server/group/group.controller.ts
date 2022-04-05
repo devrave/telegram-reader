@@ -1,14 +1,16 @@
 import {
   Controller, Post, Get,
   Body, Session,
-  UseGuards,
-  BadRequestException } from "@nestjs/common";
+  UseGuards
+} from "@nestjs/common";
+import { MaxLength } from "class-validator";
 import { SessionParams } from "../shared/session.types";
 import { AuthGuard } from "server/shared/auth.guard";
 import { GroupService } from "./group.service";
 
-export type CreateGroupParams = {
-  name?: string;
+export class CreateGroupParams {
+  @MaxLength(16)
+  public name!: string;
 }
 
 @Controller()
@@ -20,15 +22,11 @@ export class GroupController {
 
   @Get("/groups")
   public async getUserGroups(@Session() { userID }: SessionParams) {
-    return this.groupService.getUserGroups(Number(userID));
+    return this.groupService.getUserGroups(userID as number);
   }
 
   @Post("/groups")
   public async create(@Body() { name }: CreateGroupParams, @Session() { userID }: SessionParams) {
-    if (!name) {
-      throw new BadRequestException("Name is required");
-    }
-
-    await this.groupService.create(name, Number(userID));
+    await this.groupService.create(name, userID as number);
   }
 }
